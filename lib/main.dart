@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(const MyApp());
 
 class User {
   final String name;
   final String email;
 
-  User({required this.name, required this.email});
+  const User({
+    required this.name,
+    required this.email,
+  });
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Профиль пользователя',
-      theme: ThemeData(primarySwatch: Colors.blue),
-      home: AuthOrProfilePage(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: const AuthOrProfilePage(),
     );
   }
 }
 
 class AuthOrProfilePage extends StatefulWidget {
+  const AuthOrProfilePage({super.key});
+
   @override
   State<AuthOrProfilePage> createState() => _AuthOrProfilePageState();
 }
@@ -41,6 +48,7 @@ class _AuthOrProfilePageState extends State<AuthOrProfilePage> {
     final prefs = await SharedPreferences.getInstance();
     final name = prefs.getString('name');
     final email = prefs.getString('email');
+
     if (name != null && email != null) {
       setState(() {
         _user = User(name: name, email: email);
@@ -52,6 +60,7 @@ class _AuthOrProfilePageState extends State<AuthOrProfilePage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('name', name);
     await prefs.setString('email', email);
+
     setState(() {
       _user = User(name: name, email: email);
     });
@@ -61,6 +70,7 @@ class _AuthOrProfilePageState extends State<AuthOrProfilePage> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('name');
     await prefs.remove('email');
+
     setState(() {
       _user = null;
     });
@@ -68,18 +78,16 @@ class _AuthOrProfilePageState extends State<AuthOrProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_user == null) {
-      return AuthPage(onAuth: _saveUser);
-    } else {
-      return ProfilePage(user: _user!, onLogout: _logout);
-    }
+    return _user == null
+        ? AuthPage(onAuth: _saveUser)
+        : ProfilePage(user: _user!, onLogout: _logout);
   }
 }
 
 class AuthPage extends StatefulWidget {
-  final Function(String, String) onAuth;
+  final void Function(String, String) onAuth;
 
-  AuthPage({required this.onAuth});
+  const AuthPage({super.key, required this.onAuth});
 
   @override
   State<AuthPage> createState() => _AuthPageState();
@@ -92,6 +100,7 @@ class _AuthPageState extends State<AuthPage> {
   void _submit() {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
+
     if (name.isNotEmpty && email.isNotEmpty) {
       widget.onAuth(name, email);
     }
@@ -100,7 +109,7 @@ class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Авторизация')),
+      appBar: AppBar(title: const Text('Авторизация')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -108,16 +117,16 @@ class _AuthPageState extends State<AuthPage> {
           children: [
             TextField(
               controller: _nameController,
-              decoration: InputDecoration(labelText: 'Имя'),
+              decoration: const InputDecoration(labelText: 'Имя'),
             ),
             TextField(
               controller: _emailController,
-              decoration: InputDecoration(labelText: 'Email'),
+              decoration: const InputDecoration(labelText: 'Email'),
             ),
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             ElevatedButton(
               onPressed: _submit,
-              child: Text('Войти'),
+              child: const Text('Войти'),
             ),
           ],
         ),
@@ -130,16 +139,20 @@ class ProfilePage extends StatelessWidget {
   final User user;
   final VoidCallback onLogout;
 
-  ProfilePage({required this.user, required this.onLogout});
+  const ProfilePage({
+    super.key,
+    required this.user,
+    required this.onLogout,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Профиль'),
+        title: const Text('Профиль'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: onLogout,
             tooltip: 'Выйти',
           ),
@@ -147,15 +160,21 @@ class ProfilePage extends StatelessWidget {
       ),
       body: Center(
         child: Card(
-          margin: EdgeInsets.all(32),
+          margin: const EdgeInsets.all(32),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Имя: ${user.name}', style: TextStyle(fontSize: 20)),
-                SizedBox(height: 12),
-                Text('Email: ${user.email}', style: TextStyle(fontSize: 18)),
+                Text(
+                  'Имя: ${user.name}',
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Email: ${user.email}',
+                  style: const TextStyle(fontSize: 18),
+                ),
               ],
             ),
           ),
